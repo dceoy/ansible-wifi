@@ -4,6 +4,7 @@ localhost   ansible_connection=local
 [all:vars]
 ssid = test
 wpa_passphrase = passphrase
+ansible_become_pass = become_pass
 slack_channel = ansible
 slack_icon_url = https://pbs.twimg.com/profile_images/428287509047435264/ElOjna20.png
 slack_token = XXXXXXXXX/YYYYYYYYY/ZZZZZZZZZZZZZZZZZZZZZZZZZZ
