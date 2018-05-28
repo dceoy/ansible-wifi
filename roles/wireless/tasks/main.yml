@@ -10,7 +10,22 @@
   register: installed_packages
   notify: Notify updates of the wireless access point via Slack
 
-- name: Set configurations for br0
+- name: Configure a DHCP client
+  when: installed_packages is succeeded
+  become: true
+  blockinfile:
+    create: yes
+    dest: /etc/dhcpcd.conf
+    state: present
+    block: |
+      denyinterfaces wlan0
+      denyinterfaces eth0
+  notify:
+    - Reboot a machine
+    - Wait for reboot
+    - Notify updates of the wireless access point via Slack
+
+- name: Configure a network interface for bridging
   when: installed_packages is succeeded
   become: true
   blockinfile:
@@ -18,7 +33,7 @@
     state: present
     block: |
       auto br0
-      iface br0 inet dhcp
+      iface br0 inet manual
       bridge_ports eth0 wlan0
   notify:
     - Reboot a machine
