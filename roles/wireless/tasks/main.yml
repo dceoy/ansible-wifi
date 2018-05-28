@@ -20,7 +20,10 @@
       auto br0
       iface br0 inet dhcp
       bridge_ports eth0 wlan0
-  notify: Notify updates of the wireless access point via Slack
+  notify:
+    - Reboot a machine
+    - Wait for reboot
+    - Notify updates of the wireless access point via Slack
 
 - name: Put /etc/hostapd/hostapd.conf
   when: installed_packages is succeeded
@@ -28,7 +31,10 @@
   template:
     src: hostapd.conf.j2
     dest: /etc/hostapd/hostapd.conf
-  notify: Notify updates of the wireless access point via Slack
+  notify:
+    - Reboot a machine
+    - Wait for reboot
+    - Notify updates of the wireless access point via Slack
 
 - name: Set DAEMON_CONF at /etc/default/hostapd
   when: installed_packages is succeeded
@@ -37,16 +43,10 @@
     path: /etc/default/hostapd
     regexp: '^#DAEMON_CONF=.*$'
     replace: 'DAEMON_CONF="/etc/hostapd/hostapd.conf"'
-  notify: Notify updates of the wireless access point via Slack
-
-- name: Make br0 up
-  when: installed_packages is succeeded
-  become: true
-  net_interface:
-    name: br0
-    state: up
-    enabled: True
-  notify: Notify updates of the wireless access point via Slack
+  notify:
+    - Reboot a machine
+    - Wait for reboot
+    - Notify updates of the wireless access point via Slack
 
 - name: Start and enable hostapd
   when: installed_packages is succeeded

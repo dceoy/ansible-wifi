@@ -11,3 +11,17 @@
     channel: "#{{ slack_channel }}"
     username: "{{ ansible_user }}@{{ inventory_hostname }}"
     icon_url: "{{ slack_icon_url }}"
+
+- name: Reboot a machine
+  become: true
+  shell: |
+    sleep 2 && shutdown -r now
+  async: 1
+  poll: 0
+
+- name: Wait for reboot
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 30
+    delay: 30
+    timeout: 600
