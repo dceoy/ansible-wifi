@@ -25,6 +25,25 @@
     - Wait for reboot
     - Notify updates of the wireless access point via Slack
 
+- name: Check br0
+  when: installed_packages is succeeded
+  shell: |
+    brctl show | grep -c br0 || :
+  register: n_br0
+  changed_when: false
+
+- name: Add a new bridge
+  when:
+    - installed_packages is succeeded
+    - n_br0|int == 0
+  become: true
+  shell: |
+    brctl addbr br0 && brctl addif br0 eth0
+  notify:
+    - Reboot a machine
+    - Wait for reboot
+    - Notify updates of the wireless access point via Slack
+
 - name: Configure a network interface for bridging
   when: installed_packages is succeeded
   become: true
@@ -32,6 +51,7 @@
     dest: /etc/network/interfaces
     state: present
     block: |
+      # Bridge setup
       auto br0
       iface br0 inet manual
       bridge_ports eth0 wlan0
